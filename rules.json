@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "initiatorDomains": [
+        "claude.ai"
+      ],
+      "requestDomains": [
+        "google-analytics.com",
+        "analytics.google.com",
+        "googletagmanager.com"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "initiatorDomains": [
+        "claude.ai"
+      ],
+      "requestDomains": [
+        "connect.facebook.net",
+        "facebook.com"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "initiatorDomains": [
+        "claude.ai"
+      ],
+      "requestDomains": [
+        "browser-intake-datadoghq.com",
+        "browser-intake-datadoghq.eu",
+        "browser-intake-us3-datadoghq.com",
+        "browser-intake-us5-datadoghq.com",
+        "browser-intake-ap1-datadoghq.com",
+        "datadoghq.com",
+        "datadoghq.eu"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "initiatorDomains": [
+        "claude.ai"
+      ],
+      "requestDomains": [
+        "statsig.com",
+        "statsigapi.net"
+      ]
+    }
+  }
+]
