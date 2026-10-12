@@ -52,21 +52,6 @@
         "datadoghq.eu"
       ]
     }
-  },
-  {
-    "id": 4,
-    "priority": 1,
-    "action": {
-      "type": "block"
-    },
-    "condition": {
-      "initiatorDomains": [
-        "claude.ai"
-      ],
-      "requestDomains": [
-        "statsig.com",
-        "statsigapi.net"
-      ]
-    }
   }
 ]
+

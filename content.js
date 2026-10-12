@@ -21,7 +21,7 @@
       // Silently discard dynamic titles assigned by React / Next.js
       // No errors are thrown to preserve frontend stability
     },
-    configurable: false,
+    configurable: true,
     enumerable: true
   };
 
@@ -42,27 +42,27 @@
   // We enforce that any <title> tag in the DOM maintains static text "Claude".
   let isEnforcing = false;
 
-  const enforceTitleElement = () => {
+  const enforceTitleElements = () => {
     if (isEnforcing) return;
     isEnforcing = true;
 
     try {
-      const head = document.head || document.documentElement;
-      if (!head) return;
-
       const titles = document.getElementsByTagName('title');
       if (titles.length === 0) {
-        const titleEl = document.createElement('title');
-        titleEl.textContent = STATIC_TITLE;
-        head.appendChild(titleEl);
-      } else {
-        // Enforce static text on the primary title element
-        if (titles[0].textContent !== STATIC_TITLE) {
-          titles[0].textContent = STATIC_TITLE;
+        const head = document.head || document.documentElement;
+        if (head) {
+          const titleEl = document.createElement('title');
+          titleEl.textContent = STATIC_TITLE;
+          head.appendChild(titleEl);
         }
-        // Remove redundant/duplicate title elements injected during client navigation
-        while (titles.length > 1) {
-          titles[1].remove();
+      } else {
+        // Enforce static text on all title elements without removing them from DOM.
+        // NOTE: Calling element.remove() on React-managed nodes causes fatal React Fiber
+        // reconciliation crashes (NotFoundError during removeChild), freezing the chat UI.
+        for (let i = 0; i < titles.length; i++) {
+          if (titles[i].textContent !== STATIC_TITLE) {
+            titles[i].textContent = STATIC_TITLE;
+          }
         }
       }
     } catch (_) {
@@ -72,9 +72,10 @@
     }
   };
 
-  // 3. Attach MutationObserver as early as DOM is reachable
+  // 3. Attach MutationObserver exclusively to <head>
+  // Scoping to <head> prevents intercepting thousands of token streaming mutations in <body>.
   const initObserver = () => {
-    enforceTitleElement();
+    enforceTitleElements();
 
     const observer = new MutationObserver((mutations) => {
       if (isEnforcing) return;
@@ -89,7 +90,7 @@
           (target.nodeName === 'TITLE' ||
             (target.parentNode && target.parentNode.nodeName === 'TITLE'))
         ) {
-          enforceTitleElement();
+          enforceTitleElements();
           return;
         }
 
@@ -98,7 +99,7 @@
           for (let j = 0; j < m.addedNodes.length; j++) {
             const node = m.addedNodes[j];
             if (node.nodeName === 'TITLE') {
-              enforceTitleElement();
+              enforceTitleElements();
               return;
             }
           }
@@ -106,20 +107,22 @@
       }
     });
 
-    const targetNode = document.documentElement || document;
-    observer.observe(targetNode, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
+    const targetHead = document.head || document.documentElement;
+    if (targetHead) {
+      observer.observe(targetHead, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    }
   };
 
-  // Immediate start or bootstrap when documentElement is instantiated
-  if (document.documentElement) {
+  // Immediate start or bootstrap when head/documentElement is instantiated
+  if (document.head || document.documentElement) {
     initObserver();
   } else {
     const earlyObserver = new MutationObserver(() => {
-      if (document.documentElement) {
+      if (document.head || document.documentElement) {
         earlyObserver.disconnect();
         initObserver();
       }
@@ -128,5 +131,5 @@
   }
 
   // Backup check on DOMContentLoaded
-  document.addEventListener('DOMContentLoaded', enforceTitleElement, { once: true });
+  document.addEventListener('DOMContentLoaded', enforceTitleElements, { once: true });
 })();

@@ -5,7 +5,7 @@ A lightweight, zero-configuration Chrome Extension (Manifest V3) designed to pre
 ## Features
 
 - **Document Title Lockdown**: Freezes `document.title` to strictly `"Claude"` using prototype-level descriptor overrides and DOM mutation monitoring in the `MAIN` execution world. Prevents conversation names from leaking into browser history, window titles, screenshots, or tab-snooping extensions.
-- **Tracker & Telemetry Blocking**: Uses Chrome's native `declarativeNetRequest` engine to block outbound network requests from `claude.ai` to Google Analytics, Meta Pixel, Datadog browser intake endpoints, and Statsig.
+- **Tracker & Telemetry Blocking**: Uses Chrome's native `declarativeNetRequest` engine to block outbound network requests from `claude.ai` to Google Analytics, Meta Pixel, and Datadog browser intake endpoints.
 - **Minimal Permissions**: No invasive background scripts, no access to cookies, tabs, or storage, and scoped exclusively to `https://claude.ai/*`.
 
 ## Installation
